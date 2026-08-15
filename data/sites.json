@@ -1,0 +1,42 @@
+[
+  {
+    "site_id": "SITE01",
+    "study_id": "ONC101",
+    "country": "USA",
+    "investigator": "Smith",
+    "target_enrollment": 100,
+    "updated_at": "2026-02-01T10:00:00Z"
+  },
+  {
+    "site_id": "SITE02",
+    "study_id": "ONC101",
+    "country": "INDIA",
+    "investigator": "Kumar",
+    "target_enrollment": 120,
+    "updated_at": "2026-02-01T11:00:00Z"
+  },
+  {
+    "site_id": "SITE03",
+    "study_id": "ONC101",
+    "country": "UK",
+    "investigator": "John",
+    "target_enrollment": 90,
+    "updated_at": "2026-02-01T12:00:00Z"
+  },
+  {
+    "site_id": "SITE04",
+    "study_id": "ONC101",
+    "country": "GERMANY",
+    "investigator": "Muller",
+    "target_enrollment": 110,
+    "updated_at": "2026-02-01T13:00:00Z"
+  },
+  {
+    "site_id": "SITE05",
+    "study_id": "ONC101",
+    "country": "INDIA",
+    "investigator": "Reddy",
+    "target_enrollment": 100,
+    "updated_at": "2026-02-01T14:00:00Z"
+  }
+]

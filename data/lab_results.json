@@ -1,0 +1,47 @@
+[
+  {
+    "lab_id": "L001",
+    "subject_id": "SUB001",
+    "test": "ALT",
+    "value": 38,
+    "lower_limit": 10,
+    "upper_limit": 40,
+    "updated_at": "2026-02-08T10:00:00Z"
+  },
+  {
+    "lab_id": "L002",
+    "subject_id": "SUB002",
+    "test": "ALT",
+    "value": 125,
+    "lower_limit": 10,
+    "upper_limit": 40,
+    "updated_at": "2026-02-08T11:00:00Z"
+  },
+  {
+    "lab_id": "L003",
+    "subject_id": "SUB003",
+    "test": "ALT",
+    "value": 32,
+    "lower_limit": 10,
+    "upper_limit": 40,
+    "updated_at": "2026-02-08T12:00:00Z"
+  },
+  {
+    "lab_id": "L004",
+    "subject_id": "SUB004",
+    "test": "WBC",
+    "value": 2.1,
+    "lower_limit": 4,
+    "upper_limit": 11,
+    "updated_at": "2026-02-08T13:00:00Z"
+  },
+  {
+    "lab_id": "L005",
+    "subject_id": "SUB005",
+    "test": "ALT",
+    "value": 47,
+    "lower_limit": 10,
+    "upper_limit": 40,
+    "updated_at": "2026-02-08T14:00:00Z"
+  }
+]

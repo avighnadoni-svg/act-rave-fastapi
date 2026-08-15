@@ -1,0 +1,34 @@
+[
+  {
+    "deviation_id": "PD001",
+    "subject_id": "SUB002",
+    "site_id": "SITE01",
+    "deviation_type": "Visit Window",
+    "severity": "MAJOR",
+    "updated_at": "2026-02-08T10:00:00Z"
+  },
+  {
+    "deviation_id": "PD002",
+    "subject_id": "SUB004",
+    "site_id": "SITE02",
+    "deviation_type": "Missed Visit",
+    "severity": "MAJOR",
+    "updated_at": "2026-02-08T11:00:00Z"
+  },
+  {
+    "deviation_id": "PD003",
+    "subject_id": "SUB004",
+    "site_id": "SITE02",
+    "deviation_type": "Medication Error",
+    "severity": "CRITICAL",
+    "updated_at": "2026-02-08T12:00:00Z"
+  },
+  {
+    "deviation_id": "PD004",
+    "subject_id": "SUB005",
+    "site_id": "SITE03",
+    "deviation_type": "Visit Window",
+    "severity": "MINOR",
+    "updated_at": "2026-02-08T13:00:00Z"
+  }
+]

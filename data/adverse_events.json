@@ -1,0 +1,52 @@
+[
+  {
+    "ae_id": "AE001",
+    "subject_id": "SUB001",
+    "ae_term": "Nausea",
+    "severity": "MILD",
+    "serious": "N",
+    "event_date": "2026-02-01",
+    "reported_date": "2026-02-01",
+    "updated_at": "2026-02-08T10:00:00Z"
+  },
+  {
+    "ae_id": "AE002",
+    "subject_id": "SUB002",
+    "ae_term": "Liver Injury",
+    "severity": "SEVERE",
+    "serious": "Y",
+    "event_date": "2026-02-02",
+    "reported_date": "2026-02-05",
+    "updated_at": "2026-02-08T11:00:00Z"
+  },
+  {
+    "ae_id": "AE003",
+    "subject_id": "SUB003",
+    "ae_term": "Headache",
+    "severity": "MILD",
+    "serious": "N",
+    "event_date": "2026-02-03",
+    "reported_date": "2026-02-03",
+    "updated_at": "2026-02-08T12:00:00Z"
+  },
+  {
+    "ae_id": "AE004",
+    "subject_id": "SUB004",
+    "ae_term": "Neutropenia",
+    "severity": "SEVERE",
+    "serious": "Y",
+    "event_date": "2026-02-04",
+    "reported_date": "2026-02-04",
+    "updated_at": "2026-02-08T13:00:00Z"
+  },
+  {
+    "ae_id": "AE005",
+    "subject_id": "SUB005",
+    "ae_term": "Fever",
+    "severity": "MODERATE",
+    "serious": "N",
+    "event_date": "2026-02-05",
+    "reported_date": "2026-02-08",
+    "updated_at": "2026-02-08T14:00:00Z"
+  }
+]
