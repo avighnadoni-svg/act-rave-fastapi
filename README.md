@@ -71,3 +71,12 @@ pytest -q
 ## Important
 
 This is a mock ACT/Rave-style API built from the sample project payloads. It does not claim to reproduce the real Medidata Rave API contract.
+
+
+# Database : rave_db
+# User     : rave_user
+# Password : rave_password
+# Host     : postgres
+# Port     : 5432
+
+

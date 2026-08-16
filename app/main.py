@@ -1,57 +1,107 @@
-from fastapi import FastAPI, Request
+# app/main.py
+
+from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 
-from app.rate_limit import RateLimitMiddleware
-from app.routers import (
-    studies,
-    sites,
-    subjects,
-    visits,
-    adverse_events,
-    lab_results,
-    protocol_deviations,
-    data_queries,
-)
+from app.database import get_connection
+from app.rate_limit import rate_limit_middleware
+from app.routers.clinical import router as clinical_router
+
+
+# ============================================================
+# FASTAPI APPLICATION
+# ============================================================
 
 app = FastAPI(
     title="ACT Rave Mock API",
-    version="1.1.0",
-    description="Read-only mock Rave-style API for ACT ingestion practice.",
+    description="""
+    PostgreSQL backed mock Rave Clinical API.
+
+    PostgreSQL
+        ↓
+    FastAPI
+        ↓
+    JSON
+        ↓
+    Airflow
+        ↓
+    AWS S3
+        ↓
+    Snowflake
+    """,
+    version="2.0.0"
 )
 
-app.add_middleware(RateLimitMiddleware)
 
-app.include_router(studies.router)
-app.include_router(sites.router)
-app.include_router(subjects.router)
-app.include_router(visits.router)
-app.include_router(adverse_events.router)
-app.include_router(lab_results.router)
-app.include_router(protocol_deviations.router)
-app.include_router(data_queries.router)
+# ============================================================
+# RATE LIMITING
+# ============================================================
+
+app.middleware("http")(
+    rate_limit_middleware
+)
 
 
-@app.exception_handler(Exception)
-async def unhandled_exception_handler(request: Request, exc: Exception):
-    return JSONResponse(
-        status_code=500,
-        content={
-            "error": "INTERNAL_SERVER_ERROR",
-            "message": "Unexpected server error",
-        },
-    )
+# ============================================================
+# ROUTERS
+# ============================================================
+
+app.include_router(
+    clinical_router
+)
 
 
-@app.get("/", tags=["System"])
+# ============================================================
+# ROOT
+# ============================================================
+
+@app.get("/")
 def root():
+
     return {
-        "message": "ACT Rave Mock API is running",
-        "mode": "read-only",
-        "docs": "/docs",
-        "health": "/health",
+        "application": "ACT Rave Mock API",
+        "version": "2.0.0",
+        "status": "running"
     }
 
 
-@app.get("/health", tags=["System"])
+# ============================================================
+# HEALTH CHECK
+# ============================================================
+
+@app.get("/health")
 def health():
-    return {"status": "UP"}
+
+    try:
+
+        with get_connection() as conn:
+
+            with conn.cursor() as cur:
+
+                cur.execute(
+                    "SELECT current_database(), current_user"
+                )
+
+                result = cur.fetchone()
+
+        return {
+            "status": "healthy",
+            "database": "connected",
+            "database_name": result[
+                "current_database"
+            ],
+            "database_user": result[
+                "current_user"
+            ]
+        }
+
+    except Exception as exc:
+
+        return JSONResponse(
+            status_code=503,
+            content={
+                "status": "unhealthy",
+                "database": "disconnected",
+                "error": str(exc)
+            }
+        )

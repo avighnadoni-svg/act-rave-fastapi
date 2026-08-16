@@ -1,0 +1,28 @@
+services:
+
+  app:
+    image: mcr.microsoft.com/devcontainers/python:1-3.12-bookworm
+
+    volumes:
+      - ..:/workspaces/act-rave-fastapi:cached
+
+    command: sleep infinity
+
+    depends_on:
+      - postgres
+
+
+  postgres:
+    image: postgres:17
+
+    environment:
+      POSTGRES_DB: rave_db
+      POSTGRES_USER: rave_user
+      POSTGRES_PASSWORD: rave_password
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+
+volumes:
+  postgres_data:

@@ -1,75 +1,122 @@
+# app/models.py
+
 from datetime import date, datetime
-from typing import Literal
+from decimal import Decimal
+
 from pydantic import BaseModel
 
 
-class SourceRecord(BaseModel):
-    updated_at: datetime | None = None
+# ============================================================
+# 1. STUDY
+# ============================================================
 
+class Study(BaseModel):
 
-class Study(SourceRecord):
     study_id: str
     study_name: str
-    phase: str
-    target_subjects: int
+    phase: str | None = None
+    target_subjects: int | None = None
+    updated_at: datetime
 
 
-class Site(SourceRecord):
+# ============================================================
+# 2. SITE
+# ============================================================
+
+class Site(BaseModel):
+
     site_id: str
     study_id: str
-    country: str
-    investigator: str
-    target_enrollment: int
+    country: str | None = None
+    investigator: str | None = None
+    target_enrollment: int | None = None
+    updated_at: datetime
 
 
-class Subject(SourceRecord):
+# ============================================================
+# 3. SUBJECT
+# ============================================================
+
+class Subject(BaseModel):
+
     subject_id: str
     study_id: str
     site_id: str
-    sex: Literal["M", "F"]
-    age: int
-    status: str
-    enroll_date: date
+    gender: str | None = None
+    age: int | None = None
+    status: str | None = None
+    enrollment_date: date | None = None
+    updated_at: datetime
 
 
-class Visit(SourceRecord):
+# ============================================================
+# 4. VISIT
+# ============================================================
+
+class Visit(BaseModel):
+
     visit_id: str
     subject_id: str
-    visit_name: str
-    planned_date: date
+    visit_name: str | None = None
+    planned_date: date | None = None
     actual_date: date | None = None
+    updated_at: datetime
 
 
-class AdverseEvent(SourceRecord):
+# ============================================================
+# 5. ADVERSE EVENT
+# ============================================================
+
+class AdverseEvent(BaseModel):
+
     ae_id: str
     subject_id: str
-    ae_term: str
-    severity: str
-    serious: Literal["Y", "N"]
-    event_date: date
-    reported_date: date
+    event_term: str | None = None
+    severity: str | None = None
+    serious: str | None = None
+    event_date: date | None = None
+    reported_date: date | None = None
+    updated_at: datetime
 
 
-class LabResult(SourceRecord):
+# ============================================================
+# 6. LAB RESULT
+# ============================================================
+
+class LabResult(BaseModel):
+
     lab_id: str
     subject_id: str
-    test: str
-    value: float
-    lower_limit: float
-    upper_limit: float
+    test_name: str | None = None
+    result_value: Decimal | None = None
+    normal_low: Decimal | None = None
+    normal_high: Decimal | None = None
+    updated_at: datetime
 
 
-class ProtocolDeviation(SourceRecord):
+# ============================================================
+# 7. PROTOCOL DEVIATION
+# ============================================================
+
+class ProtocolDeviation(BaseModel):
+
     deviation_id: str
     subject_id: str
     site_id: str
-    deviation_type: str
-    severity: str
+    deviation_type: str | None = None
+    severity: str | None = None
+    updated_at: datetime
 
 
-class DataQuery(SourceRecord):
+# ============================================================
+# 8. DATA QUERY
+# ============================================================
+
+class DataQuery(BaseModel):
+
     query_id: str
     subject_id: str
     site_id: str
-    open_date: date
-    closed_date: date | None = None
+    opened_date: date | None = None
+    resolved_date: date | None = None
+    updated_at: datetime
