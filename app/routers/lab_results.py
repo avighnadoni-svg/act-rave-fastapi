@@ -1,180 +1,541 @@
 # app/routers/lab_results.py
 
-from datetime import datetime
-
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import (
+    APIRouter,
+    HTTPException,
+    Query,
+)
 
 from app.routers.common import (
     fetch_many,
     fetch_one,
+    value_to_string,
 )
 
 
 router = APIRouter(
     prefix="/lab-results",
-    tags=["Lab Result - JSON"],
+    tags=["Lab Results"],
 )
 
 
-def get_interpretation(
-    value,
-    low,
-    high,
-):
+# ============================================================
+# LAB INTERPRETATION
+# ============================================================
 
-    if value is None:
-        return "UNKNOWN"
+def _calculate_interpretation(
+    result_value,
+    normal_low,
+    normal_high,
+) -> tuple[str, bool]:
+    """
+    Calculate whether a lab result is:
 
-    if low is not None and value < low:
-        return "LOW"
+        LOW
+        NORMAL
+        HIGH
+        UNKNOWN
 
-    if high is not None and value > high:
-        return "HIGH"
+    Returns:
 
-    return "NORMAL"
+        interpretation_code
+        abnormal_flag
+    """
+
+    if (
+        result_value is None
+        or normal_low is None
+        or normal_high is None
+    ):
+        return (
+            "UNKNOWN",
+            False,
+        )
+
+    try:
+
+        value = float(
+            result_value
+        )
+
+        low = float(
+            normal_low
+        )
+
+        high = float(
+            normal_high
+        )
+
+    except (
+        TypeError,
+        ValueError,
+    ):
+
+        return (
+            "UNKNOWN",
+            False,
+        )
 
 
-def transform_lab(record):
+    if value < low:
 
-    interpretation = get_interpretation(
-        record["result_value"],
-        record["normal_low"],
-        record["normal_high"],
+        return (
+            "LOW",
+            True,
+        )
+
+
+    if value > high:
+
+        return (
+            "HIGH",
+            True,
+        )
+
+
+    return (
+        "NORMAL",
+        False,
     )
 
-    return {
-        "lab_result": {
-            "identifier": record["lab_id"],
 
-            "subject": {
-                "subject_id": record["subject_id"],
+# ============================================================
+# BUILD ONE LAB RESULT
+# ============================================================
+
+def _build_lab_result(
+    row: dict,
+) -> dict:
+    """
+    Convert one database record into the
+    nested Rave Mock JSON structure.
+    """
+
+    (
+        interpretation_code,
+        abnormal,
+    ) = _calculate_interpretation(
+        result_value=row.get(
+            "result_value"
+        ),
+        normal_low=row.get(
+            "normal_low"
+        ),
+        normal_high=row.get(
+            "normal_high"
+        ),
+    )
+
+
+    return {
+
+        # ====================================================
+        # LAB RESULT
+        # ====================================================
+
+        "lab_result": {
+
+            "identifier":
+                value_to_string(
+                    row.get(
+                        "lab_id"
+                    )
+                ),
+
+
+            # ================================================
+            # STUDY
+            #
+            # NEW:
+            # study_id travels with every lab record.
+            # ================================================
+
+            "study": {
+
+                "study_id":
+                    value_to_string(
+                        row.get(
+                            "study_id"
+                        )
+                    ),
             },
 
+
+            # ================================================
+            # SUBJECT
+            # ================================================
+
+            "subject": {
+
+                "subject_id":
+                    value_to_string(
+                        row.get(
+                            "subject_id"
+                        )
+                    ),
+            },
+
+
+            # ================================================
+            # TEST
+            # ================================================
+
             "test": {
-                "name": record["test_name"],
+
+                "name":
+                    value_to_string(
+                        row.get(
+                            "test_name"
+                        )
+                    ),
+
 
                 "result": {
-                    "value": record[
-                        "result_value"
-                    ],
+
+                    "value":
+                        row.get(
+                            "result_value"
+                        ),
+
+
+                    # ========================================
+                    # REFERENCE RANGE
+                    # ========================================
 
                     "reference_range": {
-                        "low": record[
-                            "normal_low"
-                        ],
-                        "high": record[
-                            "normal_high"
-                        ],
+
+                        "low":
+                            row.get(
+                                "normal_low"
+                            ),
+
+                        "high":
+                            row.get(
+                                "normal_high"
+                            ),
                     },
 
-                    "interpretation": {
-                        "code": interpretation,
 
-                        "abnormal": (
-                            interpretation
-                            != "NORMAL"
-                        ),
+                    # ========================================
+                    # INTERPRETATION
+                    # ========================================
+
+                    "interpretation": {
+
+                        "code":
+                            interpretation_code,
+
+                        "abnormal":
+                            abnormal,
                     },
                 },
             },
         },
 
+
+        # ====================================================
+        # METADATA
+        # ====================================================
+
         "metadata": {
-            "source": {
-                "system": "RAVE_MOCK",
-                "domain": "LAB",
-            },
+
+            "source_system":
+                "RAVE_MOCK",
 
             "audit": {
-                "updated_at": record[
-                    "updated_at"
-                ],
+
+                "updated_at":
+                    value_to_string(
+                        row.get(
+                            "updated_at"
+                        )
+                    ),
             },
         },
     }
 
 
-@router.get("")
-def get_lab_results(
-    subject_id: str | None = None,
-    test: str | None = None,
-    updated_since: datetime | None = None,
-    offset: int = Query(default=0, ge=0),
-    limit: int = Query(default=100, ge=1, le=100),
-):
+# ============================================================
+# BUILD COLLECTION PAYLOAD
+# ============================================================
 
-    query = """
-        SELECT
-            lab_id,
-            subject_id,
-            test_name,
-            result_value,
-            normal_low,
-            normal_high,
-            updated_at
-        FROM lab_result
-        WHERE 1 = 1
+def build_lab_result_payload(
+    records: list[dict],
+) -> dict:
+    """
+    Build nested JSON response for
+    multiple lab results.
     """
 
-    params = []
+    results = [
 
-    if subject_id:
-        query += " AND subject_id = %s"
-        params.append(subject_id)
+        _build_lab_result(
+            row
+        )
 
-    if test:
-        query += " AND test_name = %s"
-        params.append(test)
+        for row in records
+    ]
 
-    if updated_since:
-        query += " AND updated_at > %s"
-        params.append(updated_since)
-
-    records = fetch_many(
-        query,
-        params,
-        offset,
-        limit,
-        "lab_id",
-    )
 
     return {
-        "laboratory_extract": {
-            "record_count": len(records),
 
-            "results": [
-                transform_lab(record)
-                for record in records
-            ],
+        "laboratory_extract": {
+
+            "metadata": {
+
+                "source_system":
+                    "RAVE_MOCK",
+
+                "record_count":
+                    len(results),
+            },
+
+
+            "results":
+                results,
         }
     }
 
 
-@router.get("/{lab_id}")
-def get_lab_result(lab_id: str):
+# ============================================================
+# GET COLLECTION
+# ============================================================
+
+@router.get("")
+def get_lab_results(
+
+    # --------------------------------------------------------
+    # STUDY FILTER
+    # --------------------------------------------------------
+
+    study_id: str | None = Query(
+        default=None
+    ),
+
+
+    # --------------------------------------------------------
+    # SUBJECT FILTER
+    # --------------------------------------------------------
+
+    subject_id: str | None = Query(
+        default=None
+    ),
+
+
+    # --------------------------------------------------------
+    # LAB TEST FILTER
+    # --------------------------------------------------------
+
+    test_name: str | None = Query(
+        default=None
+    ),
+
+
+    # --------------------------------------------------------
+    # INCREMENTAL FILTER
+    # --------------------------------------------------------
+
+    updated_since: str | None = Query(
+        default=None
+    ),
+
+
+    # --------------------------------------------------------
+    # PAGINATION
+    # --------------------------------------------------------
+
+    offset: int = Query(
+        default=0,
+        ge=0,
+    ),
+
+    limit: int = Query(
+        default=100,
+        ge=1,
+        le=100,
+    ),
+):
+
+
+    # ========================================================
+    # LAB RESULT -> SUBJECT -> STUDY
+    #
+    # lab_result does not need study_id physically stored.
+    #
+    # We derive it through SUBJECT.
+    # ========================================================
 
     query = """
         SELECT
-            lab_id,
-            subject_id,
-            test_name,
-            result_value,
-            normal_low,
-            normal_high,
-            updated_at
-        FROM lab_result
-        WHERE lab_id = %s
+
+            lr.lab_id,
+
+            lr.subject_id,
+
+            s.study_id AS study_id,
+
+            lr.test_name,
+
+            lr.result_value,
+
+            lr.normal_low,
+
+            lr.normal_high,
+
+            lr.updated_at
+
+        FROM lab_result lr
+
+        INNER JOIN subject s
+            ON lr.subject_id = s.subject_id
+
+        WHERE 1 = 1
     """
 
-    record = fetch_one(
-        query,
-        (lab_id,),
-    )
 
-    if not record:
-        raise HTTPException(
-            status_code=404,
-            detail=f"Lab Result {lab_id} not found",
+    params = []
+
+
+    # ========================================================
+    # STUDY FILTER
+    # ========================================================
+
+    if study_id:
+
+        query += """
+            AND s.study_id = %s
+        """
+
+        params.append(
+            study_id
         )
 
-    return transform_lab(record)
+
+    # ========================================================
+    # SUBJECT FILTER
+    # ========================================================
+
+    if subject_id:
+
+        query += """
+            AND lr.subject_id = %s
+        """
+
+        params.append(
+            subject_id
+        )
+
+
+    # ========================================================
+    # TEST FILTER
+    # ========================================================
+
+    if test_name:
+
+        query += """
+            AND UPPER(lr.test_name) = UPPER(%s)
+        """
+
+        params.append(
+            test_name
+        )
+
+
+    # ========================================================
+    # INCREMENTAL FILTER
+    # ========================================================
+
+    if updated_since:
+
+        query += """
+            AND lr.updated_at > %s
+        """
+
+        params.append(
+            updated_since
+        )
+
+
+    # ========================================================
+    # DATABASE FETCH
+    # ========================================================
+
+    records = fetch_many(
+        query=query,
+        params=params,
+        offset=offset,
+        limit=limit,
+        order_by="lab_id",
+    )
+
+
+    # ========================================================
+    # RESPONSE
+    # ========================================================
+
+    return build_lab_result_payload(
+        records
+    )
+
+
+# ============================================================
+# GET LAB RESULT BY ID
+# ============================================================
+
+@router.get("/{lab_id}")
+def get_lab_result(
+    lab_id: str,
+):
+
+    query = """
+        SELECT
+
+            lr.lab_id,
+
+            lr.subject_id,
+
+            s.study_id AS study_id,
+
+            lr.test_name,
+
+            lr.result_value,
+
+            lr.normal_low,
+
+            lr.normal_high,
+
+            lr.updated_at
+
+        FROM lab_result lr
+
+        INNER JOIN subject s
+            ON lr.subject_id = s.subject_id
+
+        WHERE lr.lab_id = %s
+    """
+
+
+    record = fetch_one(
+        query=query,
+        params=[
+            lab_id
+        ],
+    )
+
+
+    if not record:
+
+        raise HTTPException(
+            status_code=404,
+            detail=(
+                f"Lab result "
+                f"{lab_id} not found"
+            ),
+        )
+
+
+    return build_lab_result_payload(
+        [
+            record
+        ]
+    )
