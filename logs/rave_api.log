@@ -1,0 +1,33 @@
+2026-08-16T17:46:11+0000 | INFO | act_rave.app.main | request_id=- | ACT Rave Mock API starting | version=3.0.0 | log_file=/workspaces/act-rave-fastapi/logs/rave_api.log
+2026-08-16T17:46:49+0000 | INFO | act_rave.app.main | request_id=- | ACT Rave Mock API stopping | version=3.0.0
+2026-08-16T17:46:51+0000 | INFO | act_rave.app.main | request_id=- | ACT Rave Mock API starting | version=3.0.0 | log_file=/workspaces/act-rave-fastapi/logs/rave_api.log
+2026-08-16T17:47:31+0000 | INFO | act_rave.app.main | request_id=- | ACT Rave Mock API stopping | version=3.0.0
+2026-08-16T17:47:33+0000 | INFO | act_rave.app.main | request_id=- | ACT Rave Mock API starting | version=3.0.0 | log_file=/workspaces/act-rave-fastapi/logs/rave_api.log
+2026-08-16T17:49:35+0000 | INFO | act_rave.app.main | request_id=- | ACT Rave Mock API stopping | version=3.0.0
+2026-08-16T17:49:37+0000 | INFO | act_rave.app.main | request_id=- | ACT Rave Mock API starting | version=3.0.0 | log_file=/workspaces/act-rave-fastapi/logs/rave_api.log
+2026-08-16T17:50:06+0000 | INFO | act_rave.app.main | request_id=dc184a3b-155e-4ace-95e2-3976ce8e8397 | HTTP request started | method=GET | path=/health | client_ip=127.0.0.1 | query={}
+2026-08-16T17:50:06+0000 | INFO | act_rave.app.main | request_id=dc184a3b-155e-4ace-95e2-3976ce8e8397 | Health check succeeded | database=rave_db | user=rave_user
+2026-08-16T17:50:06+0000 | INFO | act_rave.app.main | request_id=dc184a3b-155e-4ace-95e2-3976ce8e8397 | HTTP request completed | method=GET | path=/health | status_code=200 | duration_ms=34.3
+2026-08-16T17:50:16+0000 | INFO | act_rave.app.main | request_id=bdc2adeb-c6c6-4b3d-93a3-20bbe36eb709 | HTTP request started | method=GET | path=/adverse-events | client_ip=127.0.0.1 | query={'study_id': 'ONC102', 'limit': '100'}
+2026-08-16T17:50:16+0000 | INFO | act_rave.app.routers.common | request_id=bdc2adeb-c6c6-4b3d-93a3-20bbe36eb709 | Database collection query completed | rows=3 | offset=0 | limit=100 | order_by=ae_id | duration_ms=16.14
+2026-08-16T17:50:16+0000 | INFO | act_rave.app.main | request_id=bdc2adeb-c6c6-4b3d-93a3-20bbe36eb709 | HTTP request completed | method=GET | path=/adverse-events | status_code=200 | duration_ms=23.37
+2026-08-16T18:04:40+0000 | INFO | act_rave.app.main | request_id=- | ACT Rave Mock API starting | version=3.0.0 | log_file=/workspaces/act-rave-fastapi/logs/rave_api.log
+2026-08-16T18:04:58+0000 | INFO | act_rave.app.main | request_id=f8853f3404c4c9ad8a6032109627dd49 | HTTP request started | method=GET | path=/ | client_ip=122.174.49.6 | query={}
+2026-08-16T18:04:58+0000 | INFO | act_rave.app.main | request_id=f8853f3404c4c9ad8a6032109627dd49 | HTTP request completed | method=GET | path=/ | status_code=200 | duration_ms=29.61
+2026-08-16T18:05:26+0000 | INFO | act_rave.app.main | request_id=209be58c-136e-447e-8640-32455eae6e47 | HTTP request started | method=GET | path=/health | client_ip=127.0.0.1 | query={}
+2026-08-16T18:05:26+0000 | INFO | act_rave.app.main | request_id=209be58c-136e-447e-8640-32455eae6e47 | Health check succeeded | database=rave_db | user=rave_user
+2026-08-16T18:05:26+0000 | INFO | act_rave.app.main | request_id=209be58c-136e-447e-8640-32455eae6e47 | HTTP request completed | method=GET | path=/health | status_code=200 | duration_ms=214.51
+2026-08-16T18:05:33+0000 | INFO | act_rave.app.main | request_id=4c8b1cb7-c547-419f-82dd-95254392f89d | HTTP request started | method=GET | path=/adverse-events | client_ip=127.0.0.1 | query={'study_id': 'ONC102', 'limit': '100'}
+2026-08-16T18:05:33+0000 | INFO | act_rave.app.routers.common | request_id=4c8b1cb7-c547-419f-82dd-95254392f89d | Database collection query completed | rows=3 | offset=0 | limit=100 | order_by=ae_id | duration_ms=199.71
+2026-08-16T18:05:33+0000 | INFO | act_rave.app.main | request_id=4c8b1cb7-c547-419f-82dd-95254392f89d | HTTP request completed | method=GET | path=/adverse-events | status_code=200 | duration_ms=203.03
+2026-08-16T18:14:28+0000 | INFO | act_rave.app.main | request_id=- | ACT Rave Mock API stopping | version=3.0.0
+2026-08-16T18:14:30+0000 | INFO | act_rave.app.main | request_id=- | ACT Rave Mock API starting | version=3.0.0 | log_file=/workspaces/act-rave-fastapi/logs/rave_api.log
+2026-08-16T18:18:08+0000 | INFO | act_rave.app.main | request_id=- | ACT Rave Mock API starting | version=3.0.0 | log_file=/workspaces/act-rave-fastapi/logs/rave_api.log
+2026-08-16T18:18:27+0000 | INFO | act_rave.app.main | request_id=6c8885e2a496560411d661007b8ac5d3 | HTTP request started | method=GET | path=/ | client_ip=122.174.49.6 | query={}
+2026-08-16T18:18:27+0000 | INFO | act_rave.app.main | request_id=6c8885e2a496560411d661007b8ac5d3 | HTTP request completed | method=GET | path=/ | status_code=200 | duration_ms=22.47
+2026-08-16T18:18:49+0000 | INFO | act_rave.app.main | request_id=dd0b2fe1-6fb0-4740-b82c-84705b71f168 | HTTP request started | method=GET | path=/adverse-events | client_ip=127.0.0.1 | query={'study_id': 'ONC101', 'limit': '100'}
+2026-08-16T18:18:49+0000 | INFO | act_rave.app.routers.common | request_id=dd0b2fe1-6fb0-4740-b82c-84705b71f168 | Database collection query completed | rows=6 | offset=0 | limit=100 | order_by=ae_id | duration_ms=268.09
+2026-08-16T18:18:49+0000 | INFO | act_rave.app.main | request_id=dd0b2fe1-6fb0-4740-b82c-84705b71f168 | HTTP request completed | method=GET | path=/adverse-events | status_code=200 | duration_ms=275.41
+2026-08-16T18:18:57+0000 | INFO | act_rave.app.main | request_id=9af08656-cad8-4017-8969-394db8b74ec4 | HTTP request started | method=GET | path=/adverse-events | client_ip=127.0.0.1 | query={'study_id': 'ONC102', 'limit': '100'}
+2026-08-16T18:18:57+0000 | INFO | act_rave.app.routers.common | request_id=9af08656-cad8-4017-8969-394db8b74ec4 | Database collection query completed | rows=3 | offset=0 | limit=100 | order_by=ae_id | duration_ms=8.98
+2026-08-16T18:18:57+0000 | INFO | act_rave.app.main | request_id=9af08656-cad8-4017-8969-394db8b74ec4 | HTTP request completed | method=GET | path=/adverse-events | status_code=200 | duration_ms=10.96

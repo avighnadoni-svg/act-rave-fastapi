@@ -6,20 +6,25 @@ from collections import defaultdict, deque
 from fastapi import Request
 from fastapi.responses import JSONResponse
 
+from app.logging_config import get_logger
+
+
+logger = get_logger(__name__)
+
 
 request_history = defaultdict(deque)
 
 
 async def rate_limit_middleware(
     request: Request,
-    call_next
+    call_next,
 ):
 
-    # Swagger/OpenAPI should not be restricted
+    # Swagger/OpenAPI should not be restricted.
     if request.url.path in [
         "/docs",
         "/redoc",
-        "/openapi.json"
+        "/openapi.json",
     ]:
         return await call_next(request)
 
@@ -33,15 +38,24 @@ async def rate_limit_middleware(
 
     history = request_history[client_ip]
 
-    # Remove calls older than 5 seconds
+    # Remove calls older than 5 seconds.
     while history and now - history[0] > 5:
         history.popleft()
 
-    # ----------------------------------------
-    # Maximum 20 requests / 5 seconds
-    # ----------------------------------------
+    # ========================================================
+    # MAXIMUM 20 REQUESTS / 5 SECONDS
+    # ========================================================
 
     if len(history) >= 20:
+
+        logger.warning(
+            "API rate limit exceeded | "
+            "client_ip=%s | method=%s | path=%s | "
+            "rule=20_requests_per_5_seconds | retry_after=5",
+            client_ip,
+            request.method,
+            request.url.path,
+        )
 
         return JSONResponse(
             status_code=429,
@@ -50,12 +64,12 @@ async def rate_limit_middleware(
             },
             headers={
                 "Retry-After": "5"
-            }
+            },
         )
 
-    # ----------------------------------------
-    # Maximum 10 requests / second
-    # ----------------------------------------
+    # ========================================================
+    # MAXIMUM 10 REQUESTS / SECOND
+    # ========================================================
 
     last_second_count = sum(
         1
@@ -65,6 +79,15 @@ async def rate_limit_middleware(
 
     if last_second_count >= 10:
 
+        logger.warning(
+            "API rate limit exceeded | "
+            "client_ip=%s | method=%s | path=%s | "
+            "rule=10_requests_per_second | retry_after=1",
+            client_ip,
+            request.method,
+            request.url.path,
+        )
+
         return JSONResponse(
             status_code=429,
             content={
@@ -72,7 +95,7 @@ async def rate_limit_middleware(
             },
             headers={
                 "Retry-After": "1"
-            }
+            },
         )
 
     history.append(now)

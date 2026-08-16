@@ -5,12 +5,21 @@ import os
 import psycopg
 from psycopg.rows import dict_row
 
+from app.logging_config import get_logger
+
+
+logger = get_logger(__name__)
+
 
 DATABASE_URL = os.getenv(
     "DATABASE_URL",
-    "postgresql://rave_user:rave_password@postgres:5432/rave_db"
+    "postgresql://rave_user:rave_password@postgres:5432/rave_db",
 )
 
+
+# ============================================================
+# DATABASE CONNECTION
+# ============================================================
 
 def get_connection():
     """
@@ -18,20 +27,53 @@ def get_connection():
 
     dict_row returns rows as dictionaries so FastAPI
     can easily serialize them to JSON.
+
+    The connection string is intentionally never logged
+    because it can contain credentials.
     """
 
-    return psycopg.connect(
-        DATABASE_URL,
-        row_factory=dict_row
-    )
+    try:
+        return psycopg.connect(
+            DATABASE_URL,
+            row_factory=dict_row,
+        )
 
+    except Exception:
+        logger.exception(
+            "PostgreSQL connection failed"
+        )
+        raise
+
+
+# ============================================================
+# DATABASE HEALTH CHECK
+# ============================================================
 
 def test_connection():
     """
     Verify PostgreSQL connectivity.
     """
 
-    with get_connection() as conn:
-        with conn.cursor() as cur:
-            cur.execute("SELECT current_database(), current_user;")
-            return cur.fetchone()
+    try:
+        with get_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    "SELECT current_database(), current_user;"
+                )
+
+                result = cur.fetchone()
+
+        logger.info(
+            "PostgreSQL connectivity check succeeded | "
+            "database=%s | user=%s",
+            result["current_database"],
+            result["current_user"],
+        )
+
+        return result
+
+    except Exception:
+        logger.exception(
+            "PostgreSQL connectivity check failed"
+        )
+        raise
