@@ -643,3 +643,7 @@ This repository is a **source-system simulator for development and interview/han
 - FastAPI CLI: https://fastapi.tiangolo.com/fastapi-cli/
 - FastAPI bigger applications / entrypoints: https://fastapi.tiangolo.com/tutorial/bigger-applications/
 - GitHub Codespaces port forwarding: https://docs.github.com/en/codespaces/developing-in-a-codespace/forwarding-ports-in-your-codespace
+
+
+#to get current token to update in act_data_platform
+echo $GITHUB_TOKEN
