@@ -1,19 +1,47 @@
 # app/database.py
 
 import os
+from pathlib import Path
 
 import psycopg
+from dotenv import load_dotenv
 from psycopg.rows import dict_row
 
 from app.logging_config import get_logger
 
 
+# ============================================================
+# PROJECT ENVIRONMENT
+# ============================================================
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+
+ENV_FILE = PROJECT_ROOT / ".env"
+
+load_dotenv(
+    dotenv_path=ENV_FILE
+)
+
+
+# ============================================================
+# LOGGING
+# ============================================================
+
 logger = get_logger(__name__)
 
 
+# ============================================================
+# DATABASE CONFIGURATION
+# ============================================================
+
 DATABASE_URL = os.getenv(
     "DATABASE_URL",
-    "postgresql://rave_user:rave_password@postgres:5432/rave_db",
+    (
+        "postgresql://"
+        "rave_user:rave_password"
+        "@127.0.0.1:5432/"
+        "rave_db"
+    ),
 )
 
 

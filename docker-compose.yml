@@ -1,0 +1,31 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: act-rave-postgres
+
+    environment:
+      POSTGRES_DB: rave_db
+      POSTGRES_USER: rave_user
+      POSTGRES_PASSWORD: rave_password
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - act_rave_postgres_data:/var/lib/postgresql/data
+
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U rave_user -d rave_db"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+    restart: unless-stopped
+
+
+volumes:
+  act_rave_postgres_data:
